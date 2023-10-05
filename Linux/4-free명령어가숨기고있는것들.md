@@ -31,14 +31,12 @@ avaliable
 버퍼와 캐시를 제외하고 사용하지 않는 영역
 
 #### buffers cached 영역
+![image](https://github.com/yujindonut/Study/assets/78431728/b6d8c0dd-8d60-41c1-aa03-0488cb4d8da9)
+
 커널은 블록 디바이스라고 부르는 디스크로부터 데이터를 읽거나 사용자의 데이터를 디스크에 저장
-
 디스크는 다른 장치들에 비해 매우 느리기 때문에 디스크에 대한 요청을 기다리는 시간이 상당히 많이 소요되고, 이로 인해 시스템에 부하가 일어남.
-
 커널은 이렇게 상대적으로 느린 디스크에 대한 요청을 좀 더 빠르게 하기 위해 메모리의 일부를 디스크 요청에 대한 캐싱 영역으로 할당해서 사용함
-
 한번 읽은 디스크의 내용을 메모리에 저장해 두어서, 동일한 내용을 읽고자 하면 디스크로 요청하지 않고 메모리로 요청하게 된다. 이런 캐싱 기능을 통해서 커널은 다수의 디스크 요청을 좀 더 빠르게 처리할 수 있다.
-
 이때 사용되는 캐싱 영역을 buffers, cached라고 부름
 
 #### buffers, cached 차이점
@@ -56,6 +54,14 @@ Page Cache는 파일의 내용을 저장하고 있는 캐시, Buffer Cache는 �
 free 명령은 전체 시스템이 사용하고 있는 메모리와 가용 메모리를 빠르게 읽을 수 있지만 시스템의 메모리 전체 사용량을 알려주지는 않는다.
 
 자세하게 보고 싶다면 /proc/meminfo 파일을 읽으면 된다.
+![image](https://github.com/yujindonut/Study/assets/78431728/fc478ece-42b8-436c-9a81-fa0bbb8102b7)
+
+#### Active 영역 VS Inactive 영역
+![image](https://github.com/yujindonut/Study/assets/78431728/a139bfa1-ec6a-4fb8-ac2b-75a844528362)
+결과적으로 잘 사용하는 영역은 Active 리스트에 남고 자주 사용되지 않는 영역은 Inactive 영역에 남게된다. 그리고 참조 시기가 오래될수록 Inactive 영역으로 이동하고 이후 free 영역으로 이동한다
+
+##### Active에서 Inactive로의 이동은?
+메모리 할당이 실패하거나 메모리가 부족하게 되면 kswapd 혹은 커널 내부에서 try_to_free_pages() 함수를 통해서 LRU 리스트에 있는 메모리를 확인. 이 과정에서 Active 리스트에 있던 페이지가 Inactive 리스트로 옮겨가거나 Inactive 리스트에 있던 페이지가 해제되어 다른 프로세스에게 할당되는 작업이 이루어짐
 
 #### slab 메모리 영역
 /proc/meminfo 에서 아직 설명하지 않은 영역이 있는데 slab 영역들이다.
